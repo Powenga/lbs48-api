@@ -1,5 +1,7 @@
 const NOT_FOUND_ERROR_MESSAGE = 'Запрашиваемый ресурс не найден!';
 const COMMOT_ERROR_MESSAGE = 'Что-то пошло не так!';
+const EMAIL_SUCCESS_MESSAGE = 'Сообщение отправлено';
+const EMAIL_ERROR_MESSAGE = 'Не удалось отравить сообщение!';
 
 const USER_NOT_FOUND_MESSAGE = 'Пользователь не найден!';
 const USER_INVALID_ID_MESSAGE = 'ID пользователя не валиден!';
@@ -30,6 +32,8 @@ const MONGO_DUPLICATE_ERROR_CODE = 11000;
 module.exports = {
   NOT_FOUND_ERROR_MESSAGE,
   COMMOT_ERROR_MESSAGE,
+  EMAIL_SUCCESS_MESSAGE,
+  EMAIL_ERROR_MESSAGE,
   USER_NOT_FOUND_MESSAGE,
   USER_INVALID_ID_MESSAGE,
   USER_INVALID_EMAIL_MESSAGE,

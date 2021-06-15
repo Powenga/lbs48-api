@@ -19,9 +19,15 @@ module.exports.messageValidator = celebrate({
           'string.min': 'Поле "Телефон" должно быть больше 2 символов!',
           'string.max': 'Поле "Телефон" должно быть меньше 30 символов!',
         }),
-      policy: Joi.boolean().truthy(true)
+      policy: Joi.boolean().required()
+        .custom((value, helpers) => {
+          if (!value) {
+            return helpers.message('Вы должны согласиться с политикой конфиденциальности!');
+          }
+          return value;
+        })
         .messages({
-          'boolean.truthy': 'Вы должны согласиться с политикой конфиденциальности!',
+          'any.required': 'Поле "Согласие с политикой конфиденциальности" должно быть заполнено!',
         }),
     }),
 });

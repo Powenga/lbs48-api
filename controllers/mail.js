@@ -1,45 +1,56 @@
-const { NODE_ENV, EMAIL_ADDRESS, EMAIL_PASS } = process.env;
 const nodemailer = require('nodemailer');
-console.log(NODE_ENV);
+
+const {
+  NODE_ENV,
+  EMAIL_HOST,
+  EMAIL_PORT,
+  EMAIL_ADDRESS,
+  EMAIL_PASS,
+  TEST_EMAIL_ADDRESS,
+  TEST_EMAIL_PASS,
+  EMAIL_SUBJECT,
+} = require('../config');
+const { EMAIL_SUCCESS_MESSAGE, EMAIL_ERROR_MESSAGE } = require('../constants');
+
 const transporter = nodemailer.createTransport({
-  port: 465,
-  host: "smtp.beget.com",
+  port: EMAIL_PORT,
+  host: EMAIL_HOST,
   auth: {
-    user: `${NODE_ENV === 'production' ? EMAIL_ADDRESS : 'test@scnonstop.ru'}`,
-    pass: `${NODE_ENV === 'production' ? EMAIL_PASS : 'l90N25Y&'}`
+    user: `${NODE_ENV === 'production' ? EMAIL_ADDRESS : TEST_EMAIL_ADDRESS}`,
+    pass: `${NODE_ENV === 'production' ? EMAIL_PASS : TEST_EMAIL_PASS}`,
   },
-  secure: true
+  secure: true,
 });
 
 module.exports.sendMail = (req, res, next) => {
-  const { appType, appMark, problem, street, house, apartment, userName, phone, policy } = req.body;
-  const text = `Тип техники: ${appType};
-      Марка: ${appMark};
-      Описание проблемы: ${problem};
-      Адрес: ${street}, д.${house}, кв.${apartment};
-      Имя заказчика: ${userName};
-      Телефон: ${phone};
-      Согласие с Политикой конфиденциальности ${policy ? "Да" : "Нет"}.`;
+  const {
+    theme,
+    userName,
+    userPhone,
+    policy,
+  } = req.body;
+  const text = `
+    Тема: ${theme};
+    Имя клиента: ${userName};
+    Телефон: ${userPhone};
+    Согласие с Политикой конфиденциальности: ${policy ? 'Да' : 'Нет'}.`;
   const html = `
-      <p>Тип техники: ${appType};</p>
-      <p>Марка: ${appMark};</p>
-      <p>Описание проблемы: ${problem};</p>
-      <p>Адрес: ${street}, д.${house}, кв.${apartment};</p>
-      <p>Имя заказчика: ${userName};</p>
-      <p>Телефон: ${phone};</p>
-      <p>Согласие с Политикой конфиденциальности ${policy ? "Да" : "Нет"}.;</p>`;
+      <p>Тема: ${theme};</p>
+      <p>Имя клиента: ${userName};</p>
+      <p>Телефон: ${userPhone};</p>
+      <p>Согласие с Политикой конфиденциальности: ${policy ? 'Да' : 'Нет'}.</p>`;
   const mailData = {
-    from: "order@scnonstop.ru",
-    to: "order@scnonstop.ru",
-    subject: "Новый заказ",
-    text: text,
-    html: html
+    from: EMAIL_ADDRESS,
+    to: EMAIL_ADDRESS,
+    subject: EMAIL_SUBJECT,
+    text,
+    html,
   };
-  transporter.sendMail(mailData, (error, info) => {
-    if (error) {
-      next(new Error('Не удается отправить сообщение!'));
-    }
-    res.status(200).send({ message: "Сообщение отправлено!" });
-  });
-}
-
+  transporter.sendMail(mailData)
+    .then(() => {
+      res.status(200).send({ message: EMAIL_SUCCESS_MESSAGE });
+    })
+    .catch(() => {
+      next(new Error(EMAIL_ERROR_MESSAGE));
+    });
+};
