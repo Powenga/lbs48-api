@@ -1,40 +1,37 @@
-require('dotenv').config();
-const { requestLogger, errorLogger } = require('./middlewares/logger');
-const cors = require('cors');
 const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const { errors } = require('celebrate');
+const { PORT, ORIGIN } = require('./config');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { sendMail } = require('./controllers/mail');
-const { validateMessage, checkValidation } = require('./middlewares/validator');
+const { messageValidator } = require('./middlewares/validator');
+const { errorHandler } = require('./middlewares/error-handler');
+const { NOT_FOUND_ERROR_MESSAGE } = require('./constants');
 const NotFoundError = require('./errors/not-found-err');
-
-const { PORT = 3000 } = process.env;
 
 const app = express();
 
-app.use(cors({ origin: ["https://scnonstop.ru", "https://www.scnonstop.ru"] }));
+app.use(
+  cors({
+    origin: ORIGIN,
+  }),
+);
+
+app.use(helmet());
 app.use(express.json());
 
 app.use(requestLogger);
 
-app.post('/api/mail', validateMessage, checkValidation, sendMail);
-
-app.use(function (req, res, next) {
-  next(new NotFoundError('Запрашиваемый ресурс не найден!'));
+app.post('/api/mail', messageValidator, sendMail);
+app.use((req, res, next) => {
+  next(new NotFoundError(NOT_FOUND_ERROR_MESSAGE));
 });
 
 app.use(errorLogger);
-
-app.use((err, req, res, next ) => {
-  const {statusCode = 500, message } = err;
-  if(res.headerSent) {
-    next(err);
-  }
-  res
-  .status(statusCode)
-  .send({
-    message: statusCode === 500 ? 'Что-то пошло не так!' : message
-  })
-});
+app.use(errors());
+app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`App is listening at http://localhost:${PORT}`)
-})
+  console.log(`App is listening at http://localhost:${PORT}`);
+});
