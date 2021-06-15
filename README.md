@@ -1,2 +1,2 @@
 # lbs48-api
-mail sendler for lbs48
+mail sender for lbs48
