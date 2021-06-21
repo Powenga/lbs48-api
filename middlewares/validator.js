@@ -7,6 +7,9 @@ module.exports.messageValidator = celebrate({
         'any.required': 'Поле "Тема" должно быть заполнено!',
         'string.empty': 'Поле "Тема" не может быть пустым!',
       }),
+      vacancy: Joi.string().messages({
+        'string.empty': 'Поле "Тема" не может быть пустым!',
+      }),
       userName: Joi.string().min(2).required().messages({
         'any.required': 'Поле "Имя" должно быть заполнено!',
         'string.empty': 'Поле "Имя" не может быть пустым!',
