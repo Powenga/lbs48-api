@@ -2,7 +2,6 @@ require('dotenv').config();
 
 const {
   PORT = 3000,
-  ORIGIN = ['http://localhost:3001'],
   JWT_TOKEN,
   NODE_ENV,
   EMAIL_HOST,
@@ -13,6 +12,8 @@ const {
   TEST_EMAIL_ADDRESS,
   TEST_EMAIL_PASS,
 } = process.env;
+
+const ORIGIN = NODE_ENV === 'production' ? process.env.ORIGIN.split(',') : ['localhost:3001'];
 
 const DEV_SECRET_KEY = 'some-secret-key';
 const SALT_ROUNDS = 10;
