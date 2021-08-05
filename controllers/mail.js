@@ -38,13 +38,13 @@ module.exports.sendMail = (req, res, next) => {
   }
   const text = `
     Тема: ${theme};
-    ${vacancy && vacancyText};
+    ${vacancyText}
     Имя клиента: ${userName};
     Телефон: ${userPhone};
     Согласие с Политикой конфиденциальности: ${policy ? 'Да' : 'Нет'}.`;
   const html = `
       <p>Тема: ${theme};</p>
-      ${vacancy && vacancyHTML};
+      ${vacancyHTML}
       <p>Имя клиента: ${userName};</p>
       <p>Телефон: ${userPhone};</p>
       <p>Согласие с Политикой конфиденциальности: ${policy ? 'Да' : 'Нет'}.</p>`;
